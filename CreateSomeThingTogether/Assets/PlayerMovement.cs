@@ -1,32 +1,28 @@
-using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    
+    public CharacterController2D controller;
+    float horizontalMove;
+    public float runSpeed = 40f;
+    private bool jump = false; //dont show on the inspector
 
-    public float speed;
-    public float jump;
-    public GameObject rayOrigin;
-    public float rayCheckDistance;
-    Rigidbody2D rb;
-
-    void Start()
+    
+    void Update()
     {
-        rb = GetComponent<Rigidbody2D>();
+       horizontalMove =  Input.GetAxisRaw("Horizontal") * runSpeed;
+        if (Input.GetButtonDown("Jump"))
+        {
+            jump = true; 
+        }      
     }
-
+    
     void FixedUpdate()
     {
-        float x = Input.GetAxis("Horizontal");
-        if (Input.GetAxis("Jump") > 0)
-        {
-            RaycastHit2D hit = Physics2D.Raycast(rayOrigin.transform.position, Vector2.down, rayCheckDistance);
-            if (hit.collider != null)
-            {
-                rb.AddForce(Vector2.up * jump, ForceMode2D.Impulse);
-            }
-        }
-        rb.velocity = new Vector3(x * speed, rb.velocity.y, 0);
-
+        controller.Move(horizontalMove * Time.fixedDeltaTime,false, jump );
+        jump = false;
     }
 }
